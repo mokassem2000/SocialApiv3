@@ -3,9 +3,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using SocialClint._services.Classes;
 using SocialClint.DAL;
 using SocialClint.Dto;
+using SocialClint.Dto.AutoMapper;
 using SocialClint.entity;
+using SocialClint.Repository;
+using SocialClint.Repository.Repo;
 using System.Text;
 
 namespace SocialClint
@@ -19,13 +23,26 @@ namespace SocialClint
             // Add services to the container.
             builder.Services.Configure<Jwt>(builder.Configuration.GetSection("JWT"));
             builder.Services.AddControllers();
+            
+            
             builder.AddAuthModels();    
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<DataContext>();
+            builder.Services.AddScoped<IRepository<MemberDto>, UserRepo>();
+
+            builder.Services.Configure<ClouiddinarySetting>(builder.Configuration.GetSection("Cloudinary"));
+            builder.Services.AddScoped<PhotoService>();
+
+
+            builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+            builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<DataContext>();
             builder.Services.AddDbContext<DataContext>(opt => {
 
                 opt.UseSqlServer(builder.Configuration.GetConnectionString("conn"));
             });
-
+   
+            
+            
+            
+            builder.Services.AddAuthorization(opt => opt.AddPolicy("Admin", policyBuilder => policyBuilder.RequireClaim("testClaim")));
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -62,6 +79,7 @@ namespace SocialClint
             }
 
             app.UseHttpsRedirection();
+            app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200"));
             app.UseAuthentication();
             app.UseAuthorization();
 

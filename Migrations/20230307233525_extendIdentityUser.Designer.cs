@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SocialClint.DAL;
 
@@ -11,9 +12,11 @@ using SocialClint.DAL;
 namespace SocialClint.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230307233525_extendIdentityUser")]
+    partial class extendIdentityUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -266,6 +269,9 @@ namespace SocialClint.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<bool>("IsMain")
                         .HasColumnType("bit");
 
@@ -277,14 +283,11 @@ namespace SocialClint.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("userId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("userId");
+                    b.HasIndex("AppUserId");
 
-                    b.ToTable("photos");
+                    b.ToTable("Photo");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -340,11 +343,9 @@ namespace SocialClint.Migrations
 
             modelBuilder.Entity("SocialClint.entity.Photo", b =>
                 {
-                    b.HasOne("SocialClint.entity.AppUser", "user")
+                    b.HasOne("SocialClint.entity.AppUser", null)
                         .WithMany("photos")
-                        .HasForeignKey("userId");
-
-                    b.Navigation("user");
+                        .HasForeignKey("AppUserId");
                 });
 
             modelBuilder.Entity("SocialClint.entity.AppUser", b =>

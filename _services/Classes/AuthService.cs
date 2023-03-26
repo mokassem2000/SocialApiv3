@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using SocialClint._models;
 using SocialClint._services.Interfaces;
 using SocialClint.Dto;
+using SocialClint.entity;
 using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Claims;
@@ -14,10 +15,10 @@ namespace SocialClint._services.Classes
 {
     public class AuthService : IAuthService
     {
-        public UserManager<IdentityUser> _userManager { get; }
+        public UserManager<AppUser> _userManager { get; }
         public Jwt _Jwt { get; }
 
-        public AuthService(UserManager<IdentityUser> userManager, IOptions<Jwt> jwt)
+        public AuthService(UserManager<AppUser> userManager, IOptions<Jwt> jwt)
         {
             _Jwt = jwt.Value;
        
@@ -26,7 +27,7 @@ namespace SocialClint._services.Classes
         }
         public async Task<AuthModel> Register(RegisterModel model)
         {
-
+           
             if (await _userManager.FindByEmailAsync(model.Email) != null)
             {
                 return new AuthModel() { Message = "there is a user alredy with this email" };
@@ -36,11 +37,12 @@ namespace SocialClint._services.Classes
                 return new AuthModel { Message = "Username is already registered!" };
             }
 
-            var user = new IdentityUser()
+            var user = new AppUser()
             {
                 Email = model.Email,
                 UserName = model.Username,
             };
+            
             var rslt = await _userManager.CreateAsync(user, model.Password);
             if (!rslt.Succeeded)
             {
@@ -55,7 +57,7 @@ namespace SocialClint._services.Classes
             }
             var token = await CreateJwtToken(user);
 
-            return new AuthModel() { Message = "ok",Name=user.UserName, IsAuthenticated = true, Token=new JwtSecurityTokenHandler().WriteToken(token) };
+            return new AuthModel() { Id=user.Id,Message = "ok",Name=user.UserName, IsAuthenticated = true, Token=new JwtSecurityTokenHandler().WriteToken(token) };
 
         }
         public async  Task<AuthModel> GetToken(TokenRequest model)
@@ -65,14 +67,15 @@ namespace SocialClint._services.Classes
 
             var user = await   _userManager.FindByEmailAsync(model.Email);
 
-            if (user is null || !await _userManager.CheckPasswordAsync(user, model.Password))
+            if (user is null || ! await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 authModel.Message = "Email or Password is incorrect!";
                 return authModel;
             }
 
-            var jwtSecurityToken = await CreateJwtToken(user);
 
+            var jwtSecurityToken = await CreateJwtToken(user);
+            authModel.Id=user.Id;
             authModel.IsAuthenticated = true;
             authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
             authModel.Name= user.UserName;
@@ -80,7 +83,7 @@ namespace SocialClint._services.Classes
             return authModel;
         }
 
-        private async Task<JwtSecurityToken> CreateJwtToken(IdentityUser user)
+        private async Task<JwtSecurityToken> CreateJwtToken(AppUser user)
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
             var claimes = new[]{
@@ -88,6 +91,7 @@ namespace SocialClint._services.Classes
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim("uid", user.Id) }.Union(userClaims);
+                
 
 
 
