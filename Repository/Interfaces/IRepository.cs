@@ -1,4 +1,4 @@
-﻿namespace SocialClint.Repository
+﻿namespace SocialClint.Repository.Interfaces
 {
     public interface IRepository<T>
     {

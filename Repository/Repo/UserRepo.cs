@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNet.Identity;
 using Microsoft.EntityFrameworkCore;
+using SocialClint._services.Classes;
 using SocialClint.DAL;
 using SocialClint.Dto;
 using SocialClint.entity;
+using SocialClint.Repository.Interfaces;
+using System.Drawing.Printing;
 
 
 namespace SocialClint.Repository.Repo
@@ -21,7 +24,8 @@ namespace SocialClint.Repository.Repo
 
         public async Task<IEnumerable<MemberDto>> AllAsync()
         {
-            var users = context.Users.Include(u=>u.photos);
+
+            var users = context.Users.Include(u => u.photos);
             return Mapper.Map<IEnumerable<MemberDto>>(users);
 
 

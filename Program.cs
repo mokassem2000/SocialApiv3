@@ -8,7 +8,7 @@ using SocialClint.DAL;
 using SocialClint.Dto;
 using SocialClint.Dto.AutoMapper;
 using SocialClint.entity;
-using SocialClint.Repository;
+using SocialClint.Repository.Interfaces;
 using SocialClint.Repository.Repo;
 using System.Text;
 
@@ -27,6 +27,7 @@ namespace SocialClint
             
             builder.AddAuthModels();    
             builder.Services.AddScoped<IRepository<MemberDto>, UserRepo>();
+            builder.Services.AddScoped<ILikeRepo,LikeRepo >();
 
             builder.Services.Configure<ClouiddinarySetting>(builder.Configuration.GetSection("Cloudinary"));
             builder.Services.AddScoped<PhotoService>();

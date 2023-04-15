@@ -8,6 +8,7 @@ using SocialClint.DAL;
 using SocialClint.Dto;
 using SocialClint.entity;
 using SocialClint.Repository;
+using SocialClint.Repository.Interfaces;
 using System.Security.Claims;
 
 namespace SocialClint.Controllers
@@ -17,13 +18,13 @@ namespace SocialClint.Controllers
     public class UsersController : ControllerBase
     {
 
-        public UsersController(IRepository<MemberDto> repo, 
+        public UsersController(IRepository<MemberDto> repo,
                                IMapper mapper,
                                PhotoService photoService)
         {
             Repo = repo;
             _Mapper = mapper;
-   
+
             _photoService = photoService;
         }
 
@@ -35,10 +36,15 @@ namespace SocialClint.Controllers
         public PhotoService _photoService { get; }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers([FromQuery]int CurrenPage, int PageSize)
         {
 
-            return Ok(await Repo.AllAsync());
+            var users = await Repo.AllAsync();
+            var UserCount = users.Count();
+            var pager=new Pager<MemberDto>(UserCount,CurrenPage,PageSize<1?1:PageSize);
+            pager.Items = users.Skip(((CurrenPage - 1) * pager.PageSize)).Take(pager.PageSize);
+
+            return Ok(pager);
         }
 
         [HttpGet("{id}")]
@@ -72,17 +78,17 @@ namespace SocialClint.Controllers
 
 
         }
-        
-        
-        
-        
-        
+
+
+
+
+
         [HttpPost("add-photo")]
         [Authorize]
         public async Task<ActionResult<PhotoDto>> AddPhoto([FromForm] IFormFile file)
         {
             var user = _Mapper.Map<AppUser>(await Repo.GetByIdAsync(User.FindFirst("uid")?.Value));
-            if (user == null) return NotFound();    
+            if (user == null) return NotFound();
 
             var result = await _photoService.AddPhotoAsync(file);
 
@@ -98,9 +104,9 @@ namespace SocialClint.Controllers
 
             user.photos.Add(photo);
             var updatedsuer = await Repo.UpdateAsync(_Mapper.Map<MemberDto>(user));
-            if (! updatedsuer)
-            { 
-               return BadRequest("Problem adding photo");
+            if (!updatedsuer)
+            {
+                return BadRequest("Problem adding photo");
             }
             return Ok(_Mapper.Map<PhotoDto>(photo));
         }
@@ -108,18 +114,19 @@ namespace SocialClint.Controllers
 
         [HttpGet("setMain/{photoid}")]
         [Authorize]
-        public async Task<ActionResult<PhotoDto>> mainPhoto(string photoid) {
+        public async Task<ActionResult<PhotoDto>> mainPhoto(string photoid)
+        {
 
-            var user =_Mapper.Map<AppUser>(await Repo.GetByIdAsync(User.FindFirst("uid")?.Value));
+            var user = _Mapper.Map<AppUser>(await Repo.GetByIdAsync(User.FindFirst("uid")?.Value));
             if (user == null) return NotFound();
             var mainPhoto = user.photos.FirstOrDefault(p => p.IsMain);
             mainPhoto.IsMain = false;
-            user.photos.FirstOrDefault(p => p.Id == int.Parse(photoid)).IsMain=true;
+            user.photos.FirstOrDefault(p => p.Id == int.Parse(photoid)).IsMain = true;
             if (!await Repo.UpdateAsync(_Mapper.Map<MemberDto>(user)))
-            { 
-               return BadRequest("somthing goes wrong");
+            {
+                return BadRequest("somthing goes wrong");
             }
-            return Ok(user.photos);  
+            return Ok(user.photos);
         }
         [HttpGet("DeletePhoto/{photoid}")]
         [Authorize]
@@ -129,28 +136,29 @@ namespace SocialClint.Controllers
             var user = _Mapper.Map<AppUser>(await Repo.GetByIdAsync(User.FindFirst("uid")?.Value));
             if (user == null) return NotFound();
             var photo = user.photos.FirstOrDefault(p => p.Id == int.Parse(photoid));
-            if(photo is null) return NotFound();
+            if (photo is null) return NotFound();
             if (photo.PublicId != null)
-            { 
+            {
                 var result = await _photoService.DeletePhotoAsync(photo.PublicId);
                 if (result.Error != null)
-                { 
-                  return  BadRequest($"Error: {result.Error}");
-                    
-                 }
+                {
+                    return BadRequest($"Error: {result.Error}");
+
+                }
                 user.photos.Remove(photo);
-                    
+
             }
-            if (photo.IsMain) 
+            if (photo.IsMain)
             {
                 return BadRequest($"cant remove main photo");
-            
+
             }
             if (await Repo.UpdateAsync(_Mapper.Map<MemberDto>(user)))
             {
                 return Ok(true);
             }
-            else {
+            else
+            {
                 return BadRequest("failed to delete the photo");
             }
         }

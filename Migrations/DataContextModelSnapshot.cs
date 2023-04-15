@@ -155,6 +155,21 @@ namespace SocialClint.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("SocialClint.Entities.UserLikes", b =>
+                {
+                    b.Property<string>("LikedUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("SourceUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("LikedUserId", "SourceUserId");
+
+                    b.HasIndex("SourceUserId");
+
+                    b.ToTable("Likes");
+                });
+
             modelBuilder.Entity("SocialClint.entity.AppUser", b =>
                 {
                     b.Property<string>("Id")
@@ -338,6 +353,25 @@ namespace SocialClint.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SocialClint.Entities.UserLikes", b =>
+                {
+                    b.HasOne("SocialClint.entity.AppUser", "LikedUser")
+                        .WithMany("LikedByUser")
+                        .HasForeignKey("LikedUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SocialClint.entity.AppUser", "SourceUser")
+                        .WithMany("LikedUsers")
+                        .HasForeignKey("SourceUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("LikedUser");
+
+                    b.Navigation("SourceUser");
+                });
+
             modelBuilder.Entity("SocialClint.entity.Photo", b =>
                 {
                     b.HasOne("SocialClint.entity.AppUser", "user")
@@ -349,6 +383,10 @@ namespace SocialClint.Migrations
 
             modelBuilder.Entity("SocialClint.entity.AppUser", b =>
                 {
+                    b.Navigation("LikedByUser");
+
+                    b.Navigation("LikedUsers");
+
                     b.Navigation("photos");
                 });
 #pragma warning restore 612, 618

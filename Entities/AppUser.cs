@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using SocialClint.Entities;
 
 namespace SocialClint.entity
 {
@@ -16,6 +17,11 @@ namespace SocialClint.entity
         public string City { get; set; }
         public string Country { get; set; }
         public List<Photo> photos { get; set; }
+
+        public ICollection<UserLikes> LikedUsers { set; get; }
+      
+        public ICollection<UserLikes> LikedByUser { set; get; }
+
 
     }
 }
