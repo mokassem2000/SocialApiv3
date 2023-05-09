@@ -1,4 +1,5 @@
-﻿using SocialClint.entity;
+﻿using SocialClint.Entities;
+using SocialClint.entity;
 
 namespace SocialClint.Dto
 {
@@ -17,5 +18,8 @@ namespace SocialClint.Dto
         public string City { get; set; }
         public string Country { get; set; }
         public List<PhotoDto> photos { get; set; }
+        public List<UserLikes> LikedUsers { set; get; }
+
+        public List<UserLikes> LikedByUser { set; get; }
     }
 }

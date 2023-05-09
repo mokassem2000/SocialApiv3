@@ -48,11 +48,7 @@ namespace SocialClint.Repository.Repo
         public async Task<MemberDto> GetByIdAsync(string id)
         {
             var user = await context.Users.AsNoTracking().Include(u => u.photos).FirstOrDefaultAsync(u => u.Id == id);
-            if (user == null)
-            {
-                return null;
-
-            }
+           
             return Mapper.Map<MemberDto>(user);
         }
 
@@ -72,6 +68,7 @@ namespace SocialClint.Repository.Repo
             appuser.Country = entity.Country;
             appuser.LookingFor = entity.LookingFor;
             appuser.photos = Mapper.Map<List<Photo>>(entity.photos);
+            appuser.LikedUsers.Add(entity.LikedUsers[0]);
             context.Users.Update(appuser);
             return await saveChaengesAsync();
         }

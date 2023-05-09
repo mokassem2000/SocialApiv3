@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SocialClint.DAL;
 
@@ -11,9 +12,11 @@ using SocialClint.DAL;
 namespace SocialClint.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230428171506_messages")]
+    partial class messages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -176,7 +179,10 @@ namespace SocialClint.Migrations
                     b.Property<bool>("RecipientDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("RecipientId")
+                    b.Property<int>("RecipientId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RecipientId1")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -187,7 +193,10 @@ namespace SocialClint.Migrations
                     b.Property<bool>("SenderDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("SenderId")
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SenderId1")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -197,9 +206,9 @@ namespace SocialClint.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RecipientId");
+                    b.HasIndex("RecipientId1");
 
-                    b.HasIndex("SenderId");
+                    b.HasIndex("SenderId1");
 
                     b.ToTable("messages");
                 });
@@ -406,13 +415,13 @@ namespace SocialClint.Migrations
                 {
                     b.HasOne("SocialClint.entity.AppUser", "Recipient")
                         .WithMany("messageRecived")
-                        .HasForeignKey("RecipientId")
+                        .HasForeignKey("RecipientId1")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SocialClint.entity.AppUser", "Sender")
                         .WithMany("messageSent")
-                        .HasForeignKey("SenderId")
+                        .HasForeignKey("SenderId1")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 

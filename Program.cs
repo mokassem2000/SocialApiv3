@@ -31,6 +31,7 @@ namespace SocialClint
 
             builder.Services.Configure<ClouiddinarySetting>(builder.Configuration.GetSection("Cloudinary"));
             builder.Services.AddScoped<PhotoService>();
+            builder.Services.AddScoped<IMessageRepo, MessageRepo>();
 
 
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);

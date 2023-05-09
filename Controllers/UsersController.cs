@@ -50,16 +50,15 @@ namespace SocialClint.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<AppUser>> GetUser(string Id)
         {
-
             return Ok(await Repo.GetByIdAsync(Id));
         }
         [HttpPut("{id}")]
-        public async Task<ActionResult<AppUser>> UpdateUser(UpdateUserDto member, string id)
+        public async Task<ActionResult<AppUser>> UpdateUser(UpdateUserDto member)
         {
 
             if (!ModelState.IsValid)
             {
-                var user = await Repo.GetByIdAsync(id);
+                var user = await Repo.GetByIdAsync(member.id);
                 if (user == null)
                 {
                     return BadRequest("there is no user by this id pleas try another id");
@@ -78,10 +77,6 @@ namespace SocialClint.Controllers
 
 
         }
-
-
-
-
 
         [HttpPost("add-photo")]
         [Authorize]

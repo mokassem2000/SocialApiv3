@@ -6,6 +6,7 @@ using SocialClint._models;
 using SocialClint._services.Interfaces;
 using SocialClint.Dto;
 using SocialClint.entity;
+using SocialClint.Repository.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Claims;
@@ -16,14 +17,15 @@ namespace SocialClint._services.Classes
     public class AuthService : IAuthService
     {
         public UserManager<AppUser> _userManager { get; }
+        public IRepository<MemberDto> UserRep { get; }
         public Jwt _Jwt { get; }
 
-        public AuthService(UserManager<AppUser> userManager, IOptions<Jwt> jwt)
+        public AuthService(UserManager<AppUser> userManager, IOptions<Jwt> jwt, IRepository<MemberDto> userRep)
         {
             _Jwt = jwt.Value;
        
             _userManager = userManager;
-
+            UserRep = userRep;
         }
         public async Task<AuthModel> Register(RegisterModel model)
         {
@@ -65,20 +67,21 @@ namespace SocialClint._services.Classes
 
             var authModel = new AuthModel();
 
-            var user = await   _userManager.FindByEmailAsync(model.Email);
+            var user = await _userManager.FindByEmailAsync(model.Email);
 
-            if (user is null || ! await _userManager.CheckPasswordAsync(user, model.Password))
+            if (user is null || !await _userManager.CheckPasswordAsync(user, model.Password)) 
             {
                 authModel.Message = "Email or Password is incorrect!";
                 return authModel;
             }
 
-
+            var userToGetTheMainPhoto=await UserRep.GetByIdAsync(user.Id);
             var jwtSecurityToken = await CreateJwtToken(user);
             authModel.Id=user.Id;
             authModel.IsAuthenticated = true;
             authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
             authModel.Name= user.UserName;
+            authModel.PhotoUrl = userToGetTheMainPhoto.photos.FirstOrDefault(p=>p.IsMain)?.Url;
 
             return authModel;
         }

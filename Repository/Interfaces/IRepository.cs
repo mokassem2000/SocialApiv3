@@ -7,6 +7,6 @@
         Task<bool> saveChaengesAsync();
         Task<IEnumerable<T>> AllAsync();
         Task<bool> UpdateAsync(T entity);
-
+       
     }
 }

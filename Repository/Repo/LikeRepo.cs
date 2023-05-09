@@ -19,9 +19,8 @@ namespace SocialClint.Repository.Repo
 
         public async Task<UserLikes> GetUserLike(string sourceUserId, string targetUserId)
         {
-            return await _context.Likes.FindAsync(sourceUserId, targetUserId);
+            return await _context.Likes.FirstOrDefaultAsync(l => l.SourceUserId == sourceUserId && l.LikedUserId == targetUserId);
         }
-
         public async Task<IEnumerable<LikeDto>> GetUserLikes(string likesParams, string UserID)
         {
             var users = _context.users.OrderBy(u => u.UserName).AsQueryable();
@@ -29,7 +28,7 @@ namespace SocialClint.Repository.Repo
 
             if (likesParams == "liked")
             {
-                likes = likes.Where(like => like.SourceUserId == likesParams);
+                likes = likes.Where(like => like.SourceUserId == UserID);
                 users = likes.Select(like => like.LikedUser);
             }
 
@@ -41,7 +40,7 @@ namespace SocialClint.Repository.Repo
 
             return await users.Select(user => new LikeDto()
             {
-                Id = user.Id,
+                memberId = user.Id,
                 UserName = user.UserName,
                 KnowenAs = user.KnowenAs,
                 City = user.City,

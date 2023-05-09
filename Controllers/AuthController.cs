@@ -40,7 +40,7 @@ namespace SocialClint.Controllers
         }
 
         [HttpPost("GetToken")]
-        public async Task<ActionResult<AuthModel>> GetToken(TokenRequest tokenRequest)
+        public async Task<ActionResult<AuthModel>> GetToken([FromBody] TokenRequest tokenRequest)
         {
             if (!ModelState.IsValid)
             {

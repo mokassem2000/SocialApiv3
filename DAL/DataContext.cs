@@ -14,6 +14,7 @@ namespace SocialClint.DAL
         public DbSet<Photo> photos { get; set; }
         public DbSet<AppUser> users { get; set; }   
         public DbSet<UserLikes> Likes { get; set; }
+        public DbSet<Message> messages { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -33,6 +34,17 @@ namespace SocialClint.DAL
                .WithMany(l => l.LikedByUser)
                .HasForeignKey(u => u.LikedUserId)
                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Message>()
+                .HasOne(u => u.Recipient)
+                .WithMany(m => m.messageRecived)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Message>()
+                .HasOne(u => u.Sender)
+                .WithMany(m => m.messageSent)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
 
     }
