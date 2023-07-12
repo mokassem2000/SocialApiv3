@@ -10,10 +10,10 @@ namespace SocialClint.Repository.Interfaces
     {
 
         Task AddMessage(Message message);
-        void DeleteMessage(Message message);
+        Task<bool> DeleteMessage(int id);
         Task<Message> GetMessage(int id);
         void AddGroup(Group group);
-        Task<Pager<MessageDto>> GetMessagesForUser(MessageParams messageParams);
+        Task<IEnumerable<MessageDto>> GetMessagesForUser(MessageParams messageParams,string Id);
         Task<IEnumerable<MessageDto>> GetMessageThread(string currentUserName, string recipientUserName);
         void RemoveConnection(Connection connection);
         Task<Connection> GetConnection(string connectionId);

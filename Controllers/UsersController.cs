@@ -53,10 +53,10 @@ namespace SocialClint.Controllers
             return Ok(await Repo.GetByIdAsync(Id));
         }
         [HttpPut("{id}")]
-        public async Task<ActionResult<AppUser>> UpdateUser(UpdateUserDto member)
+        public async Task<ActionResult<AppUser>> UpdateUser([FromBody]UpdateUserDto member)
         {
 
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var user = await Repo.GetByIdAsync(member.id);
                 if (user == null)
@@ -73,7 +73,7 @@ namespace SocialClint.Controllers
 
                 return Ok(updateduser);
             }
-            return BadRequest("oops");
+            return BadRequest("");
 
 
         }

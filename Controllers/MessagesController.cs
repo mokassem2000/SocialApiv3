@@ -1,28 +1,32 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using SocialClint._services.Classes;
 using SocialClint.Dto;
 using SocialClint.Entities;
 using SocialClint.entity;
 using SocialClint.helper;
+using SocialClint.Hubmo;
 using SocialClint.Repository.Interfaces;
 
 namespace SocialClint.Controllers
 {
-    [Authorize]
+
     public class MessagesController : ControllerBase
     {
-        public MessagesController(IRepository<MemberDto> UserRepo, IMessageRepo messageRepo, IMapper mapper)
+        public MessagesController(IRepository<MemberDto> UserRepo, IMessageRepo messageRepo, IMapper mapper, IHubContext<MessageHub> hubContext)
         {
             this.UserRepo = UserRepo;
             MessageRepo = messageRepo;
             Mapper = mapper;
+            HubContext = hubContext;
         }
 
         public IRepository<MemberDto> UserRepo { get; }
         public IMessageRepo MessageRepo { get; }
         public IMapper Mapper { get; }
+        public IHubContext<MessageHub> HubContext { get; }
 
         [HttpPost("createMessage")]
         public async Task<ActionResult<MessageDto>> CreateMessage([FromBody] CreateMessageDto createmessageDto)
@@ -43,7 +47,15 @@ namespace SocialClint.Controllers
             await MessageRepo.AddMessage(message);
 
 
-            if (await MessageRepo.saveChaengesAsync()) return Ok(Mapper.Map<MessageDto>(message));
+
+            if (await MessageRepo.saveChaengesAsync())
+            {
+                //await HubContext.Clients.All.SendAsync("udateMessageBox", Mapper.Map<MessageDto>(message));
+                return Ok(Mapper.Map<MessageDto>(message));
+
+            }
+                
+                
 
             return BadRequest("failed to send message");
 
@@ -52,9 +64,8 @@ namespace SocialClint.Controllers
         [HttpGet("messages")]
         public async Task<ActionResult<Pager<MessageDto>>> GetMEssageForUsers([FromQuery] MessageParams messageParams)
         {
-            string UserId = User.GetUserRequestId();
-            messageParams.UserID = UserId;
-            var messages = MessageRepo.GetMessagesForUser(messageParams);
+            string Id = User.GetUserRequestId();        
+            var messages = MessageRepo.GetMessagesForUser(messageParams,Id);
             return Ok(messages);
 
         }
@@ -62,9 +73,20 @@ namespace SocialClint.Controllers
         public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessageThread(string userId)
         {
             var currentuserId = User.GetUserRequestId();
-            var messages = MessageRepo.GetMessageThread(currentuserId, userId);
+            var messages = await MessageRepo.GetMessageThread(currentuserId, userId);
             return Ok(messages);
 
+        }
+
+
+
+        [HttpDelete("message/delete/{id}")]
+        public async Task<IActionResult> DeleteMessage(int id)
+        {
+            if ( !await MessageRepo.DeleteMessage(id)) {
+                return BadRequest();
+            }
+            return Ok();
         }
     }
 }

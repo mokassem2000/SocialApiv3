@@ -38,9 +38,14 @@ namespace SocialClint.Repository.Repo
             _context.messages.Add(message);
         }
 
-        public void DeleteMessage(Message message)
-        {
-            throw new NotImplementedException();
+        public async Task<bool> DeleteMessage(int id)
+        {     
+           _context.messages.Remove(await _context.messages.FirstOrDefaultAsync(m=>m.Id==id));
+            if (! (await _context.SaveChangesAsync() > 0))
+            {
+                return false;
+            }
+            return true;
         }
 
         public Task<Connection> GetConnection(string connectionId)
@@ -58,27 +63,31 @@ namespace SocialClint.Repository.Repo
             throw new NotImplementedException();
         }
 
-        public async Task<Pager<MessageDto>> GetMessagesForUser(MessageParams messageParams)
+        //public async Task<Pager<MessageDto>> GetMessagesForUser(MessageParams messageParams)
+         public async Task< IEnumerable<MessageDto>> GetMessagesForUser(MessageParams messageParams,string Id)
         {
-            var qry = _context.messages.OrderByDescending(m => m.MessageSent).AsQueryable();
+            Message[] rslt;
             switch (messageParams.Container)
             {
                 case "inbox":
-                    qry.Where(m => m.Recipient.Id == messageParams.UserID);
+                    rslt = _context.messages.Include(m => m.Sender).ThenInclude(s => s.photos).Where(m => m.Recipient.Id == messageParams.UserID && m.Sender.Id == Id).ToArray();
                     break;
                 case "outbox":
-                    qry.Where(m => m.Sender.Id == messageParams.UserID);
+                    rslt= _context.messages.Include(m=>m.Sender).ThenInclude(s=>s.photos).Where(m => m.Sender.Id == messageParams.UserID && m.Recipient.Id==Id).ToArray();
                     break;
                 default:
-                    qry.Where(m => m.Sender.Id == messageParams.UserID && m.DateRead == null);
+                    rslt= _context.messages.Include(m => m.Sender).ThenInclude(s => s.photos).Where(m => m.Sender.Id == messageParams.UserID && m.DateRead == null).ToArray(); ;
                     break;
             }
 
-            var messages = _mapper.ProjectTo<MessageDto>(qry, _mapper.ConfigurationProvider);
+            var messages =rslt.ToArray();
             var messageCount = messages.Count();
-            var pager = new Pager<MessageDto>(messageCount, messageParams.PageNumber, messageParams.PageSize < 1 ? 1 : messageParams.PageSize);
-            pager.Items = messages.Skip(((messageParams.PageNumber - 1) * messageParams.PageSize)).Take(messageParams.PageSize); ;
-            return pager;
+            //var pager = new Pager<MessageDto>(messageCount, messageParams.PageNumber, messageParams.PageSize < 1 ? 1 : messageParams.PageSize);
+            //pager.Items = messages.Skip(((messageParams.PageNumber - 1) * messageParams.PageSize)).Take(messageParams.PageSize); ;
+            
+            var finalMessages= _mapper.Map<MessageDto[]>(messages);
+
+            return finalMessages;
 
 
         }
@@ -91,12 +100,11 @@ namespace SocialClint.Repository.Repo
                 .Where(m => m.Recipient.Id == currentUserId && m.Sender.Id == recipientUserId
                             ||
                             m.Sender.Id == currentUserId && m.Recipient.Id == recipientUserId
-        )
+                                                                    )
                 .OrderBy(m => m.MessageSent)
                 .ToListAsync();
 
             var unreadMessage = messages.Where(m => m.DateRead == null && m.Recipient.Id == currentUserId).ToList();
-
 
             if (unreadMessage.Any())
             {

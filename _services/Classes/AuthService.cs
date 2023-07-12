@@ -34,7 +34,7 @@ namespace SocialClint._services.Classes
             {
                 return new AuthModel() { Message = "there is a user alredy with this email" };
             }
-            if (await _userManager.FindByNameAsync(model.Username) != null)
+            if (await _userManager.FindByNameAsync(model.UserName) != null)
             {
                 return new AuthModel { Message = "Username is already registered!" };
             }
@@ -42,10 +42,10 @@ namespace SocialClint._services.Classes
             var user = new AppUser()
             {
                 Email = model.Email,
-                UserName = model.Username,
+                UserName = model.UserName,
             };
             
-            var rslt = await _userManager.CreateAsync(user, model.Password);
+            var rslt = await _userManager.CreateAsync(user, model.PasswordGroup.Password);
             if (!rslt.Succeeded)
             {
 

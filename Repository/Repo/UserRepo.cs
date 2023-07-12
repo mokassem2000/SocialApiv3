@@ -68,7 +68,7 @@ namespace SocialClint.Repository.Repo
             appuser.Country = entity.Country;
             appuser.LookingFor = entity.LookingFor;
             appuser.photos = Mapper.Map<List<Photo>>(entity.photos);
-            appuser.LikedUsers.Add(entity.LikedUsers[0]);
+            appuser.LikedUsers = entity.LikedUsers;
             context.Users.Update(appuser);
             return await saveChaengesAsync();
         }
