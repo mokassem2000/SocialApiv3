@@ -22,5 +22,11 @@ The following sections describe the available API endpoints categorized by funct
 
 ## Likes
 - GET /api/Likes/{id}:to like a user
-- GET /api/Likes/GetLikes/{p}
+- GET /api/Likes/GetLikes/{p} it retrieves users who liked you or the user you liked based on 
+                              the prameter {p} 
 
+## Messages
+- POST /createMessage
+- GET  /messages
+- GET /thread/{userId}
+- DELETE  /message/delete/{id}
