@@ -20,6 +20,9 @@ The following sections describe the available API endpoints categorized by funct
 - GET /api/Auth/Register: To Signup (create user).
 - GET /api/Auth/GetToken: Retrieve the token of the user.
 
+## Authorization
+Authorization is handled through JWT-based access tokens. Include the access token in the Authorization header of each API request as a Bearer token.
+
 ## Likes
 - GET /api/Likes/{id}:to like a user
 - GET /api/Likes/GetLikes/{p} it retrieves users who liked you or the user you liked based on 
