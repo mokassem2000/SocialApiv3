@@ -21,12 +21,25 @@ The following sections describe the available API endpoints categorized by funct
 - GET /api/Auth/GetToken: Retrieve the token of the user.
 
 ## Likes
-- GET /api/Likes/{id}:to like a user
+- rgb(9, 105, 218)GET /api/Likes/{id}:to like a user
 - GET /api/Likes/GetLikes/{p} it retrieves users who liked you or the user you liked based on 
-                              the prameter {p} 
+                              the prameter {p}
 
-## Messages
-- POST /createMessage
-- GET  /messages
-- GET /thread/{userId}
-- DELETE  /message/delete/{id}
+
+# Technologies
+-Asp .net core 
+-Entity Framework core 
+-SignalR
+-ASP.NET Identity
+
+
+
+
+
+  
+
+## Messages 
+- POST /createMessage    create new message 
+- GET  /messages         Retrieve inbox,outbox and unread based on parameters (inbox,outbox,unread)
+- GET /thread/{userId}   Retrieve a conversation between two user  
+- DELETE  /message/delete/{id}  delete a specific message 
