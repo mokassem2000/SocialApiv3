@@ -72,8 +72,8 @@ namespace SocialClint.Repository.Repo
                 case "inbox":
                     rslt = _context.messages.Include(m => m.Sender).ThenInclude(s => s.photos).Where(m => m.Recipient.Id == messageParams.UserID && m.Sender.Id == Id).ToArray();
                     break;
-                case "outbox":
-                    rslt= _context.messages.Include(m=>m.Sender).ThenInclude(s=>s.photos).Where(m => m.Sender.Id == messageParams.UserID && m.Recipient.Id==Id).ToArray();
+                case "Outbox":
+                    rslt= _context.messages.Include(m => m.Sender).ThenInclude(s=>s.photos).Where(m => m.Sender.Id == messageParams.UserID && m.Recipient.Id==Id).ToArray();
                     break;
                 default:
                     rslt= _context.messages.Include(m => m.Sender).ThenInclude(s => s.photos).Where(m => m.Sender.Id == messageParams.UserID && m.DateRead == null).ToArray(); ;

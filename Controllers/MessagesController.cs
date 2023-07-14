@@ -36,6 +36,7 @@ namespace SocialClint.Controllers
             if (senderuser.MemberId == createmessageDto.RecipientUserId) return BadRequest("you cant sent message to yuourself!");
             var recipientuser = await UserRepo.GetByIdAsync(createmessageDto.RecipientUserId);
             if (recipientuser is null) return NotFound();
+           
             var message = new Message()
             {
                 Sender = Mapper.Map<AppUser>(senderuser),
@@ -51,6 +52,7 @@ namespace SocialClint.Controllers
             if (await MessageRepo.saveChaengesAsync())
             {
                 //await HubContext.Clients.All.SendAsync("udateMessageBox", Mapper.Map<MessageDto>(message));
+                //await  hubContext.Clients.Group(message.RecipientId).SendAsync("udateMessageBox", Mapper.Map<MessageDto>(message));
                 return Ok(Mapper.Map<MessageDto>(message));
 
             }

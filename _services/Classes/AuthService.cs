@@ -44,15 +44,16 @@ namespace SocialClint._services.Classes
                 Email = model.Email,
                 UserName = model.UserName,
             };
+
             
-            var rslt = await _userManager.CreateAsync(user, model.PasswordGroup.Password);
+            var rslt = await _userManager.CreateAsync(user, model.PasswordGroup.ConfirmPassword);
             if (!rslt.Succeeded)
             {
 
                 var err = string.Empty;
                 foreach (var item in rslt.Errors)
                 {
-                    err += item;
+                    err += item.Description;
                 }
                 return new AuthModel() { Message = err };
 
