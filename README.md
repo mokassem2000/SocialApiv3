@@ -10,11 +10,11 @@ The following sections describe the available API endpoints categorized by funct
 
 ## Users
 - ​GET      **/api​/Users:** Retrieve a list of all users.
-- GET  ​    ** /api​/Users​/{id}: ** To get details of specific user
-- PUT ​     ** /api​/Users​/{id}: ** To alter specific details of specific user
-- POST     ** /api/Users/add-photo/: **  To add user photos
-- GET      ** /api/Users/setMain/{photoid}: ** to make a photo the main so it appear as the profile photo
-- DELETE   ** /api/Users/DeletePhoto/{photoid}: ** to delete a specific phot 
+- GET  ​    **/api​/Users​/{id}:** To get details of specific user
+- PUT ​     **/api​/Users​/{id}:** To alter specific details of specific user
+- POST     **/api/Users/add-photo/:**  To add user photos
+- GET      **/api/Users/setMain/{photoid}:** to make a photo the main so it appear as the profile photo
+- DELETE   **/api/Users/DeletePhoto/{photoid}:** to delete a specific phot 
   
 ## Authentication
 - GET /api/Auth/Register: To Signup (create user).
