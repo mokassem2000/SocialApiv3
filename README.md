@@ -21,7 +21,7 @@ The following sections describe the available API endpoints categorized by funct
 - GET /api/Auth/GetToken: Retrieve the token of the user.
 
 ## Likes
-- `rgb(9, 105, 218)`GET /api/Likes/{id}:to like a user
+- GET /api/Likes/{id}:to like a user
 - GET /api/Likes/GetLikes/{p} it retrieves users who liked you or the user you liked based on 
                               the prameter {p}
 ## Messages 
