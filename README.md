@@ -9,7 +9,7 @@ This documentation outlines the setup, configuration, API endpoints, authenticat
 The following sections describe the available API endpoints categorized by functionality.
 
 ## Users
-- ​GET      ** /api​/Users: ** Retrieve a list of all users.
+- ​GET      **/api​/Users:** Retrieve a list of all users.
 - GET  ​    ** /api​/Users​/{id}: ** To get details of specific user
 - PUT ​     ** /api​/Users​/{id}: ** To alter specific details of specific user
 - POST     ** /api/Users/add-photo/: **  To add user photos
