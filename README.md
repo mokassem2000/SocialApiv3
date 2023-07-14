@@ -16,13 +16,6 @@ The following sections describe the available API endpoints categorized by funct
 - GET      **/api/Users/setMain/{photoid}:** to make a photo the main so it appear as the profile photo
 - DELETE   **/api/Users/DeletePhoto/{photoid}:** to delete a specific phot 
   
-## Authentication
-- GET /api/Auth/Register: To Signup (create user).
-- GET /api/Auth/GetToken: Retrieve the token of the user.
-
-## Authorization
-Authorization is handled through JWT-based access tokens. Include the access token in the Authorization header of each API request as a Bearer token.
-
 ## Likes
 - GET /api/Likes/{id}:to like a user
 - GET /api/Likes/GetLikes/{p} it retrieves users who liked you or the user you liked based on 
@@ -33,6 +26,12 @@ Authorization is handled through JWT-based access tokens. Include the access tok
 - GET /thread/{userId}   Retrieve a conversation between two user  
 - DELETE  /message/delete/{id}  delete a specific message 
 
+## Authentication
+- GET /api/Auth/Register: To Signup (create user).
+- GET /api/Auth/GetToken: Retrieve the token of the user.
+
+## Authorization
+Authorization is handled through JWT-based access tokens. Include the access token in the Authorization header of each API request as a Bearer token.
 
 # Technologies
 - Asp .net core 
