@@ -65,7 +65,7 @@ namespace SocialClint.Controllers
 
         [HttpGet("messages")]
         public async Task<ActionResult<Pager<MessageDto>>> GetMEssageForUsers([FromQuery] MessageParams messageParams)
-        {
+            {
             string Id = User.GetUserRequestId();        
             var messages = MessageRepo.GetMessagesForUser(messageParams,Id);
             return Ok(messages);

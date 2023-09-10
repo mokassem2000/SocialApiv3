@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SocialClint._services.Classes;
+using SocialClint._services.Interfaces;
 using SocialClint.DAL;
 using SocialClint.Dto;
 using SocialClint.Dto.AutoMapper;
@@ -20,17 +21,24 @@ namespace SocialClint
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+           
+   
 
             // Add services to the container.
             builder.Services.Configure<Jwt>(builder.Configuration.GetSection("JWT"));
             builder.Services.AddControllers();
-
+            builder.Services.AddScoped<ImailService, MailService>();
 
             builder.AddAuthModels();
             builder.Services.AddScoped<IRepository<MemberDto>, UserRepo>();
+
             builder.Services.AddScoped<ILikeRepo, LikeRepo>();
+        
+
 
             builder.Services.Configure<ClouiddinarySetting>(builder.Configuration.GetSection("Cloudinary"));
+            builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSetting"));
+           
             builder.Services.AddScoped<PhotoService>();
             builder.Services.AddScoped<IMessageRepo, MessageRepo>();
             builder.Services.AddSignalR().AddHubOptions<MessageHub>(options =>
@@ -39,7 +47,17 @@ namespace SocialClint
             });
 
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
-            builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<DataContext>();
+            builder.Services.AddIdentity<AppUser, IdentityRole>(
+                opt=> {
+                    opt.Password.RequiredLength = 7;
+                    opt.Password.RequireDigit = false;
+                    opt.Password.RequireUppercase = false;
+                    opt.User.RequireUniqueEmail = true;
+                    opt.SignIn.RequireConfirmedEmail = true;
+                }
+                
+                
+                ).AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
             builder.Services.AddDbContext<DataContext>(opt =>
             {
 

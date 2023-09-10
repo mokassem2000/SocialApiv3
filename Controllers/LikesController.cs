@@ -34,25 +34,41 @@ namespace SocialClint.Controllers
 
             var cuserid = User.FindFirst("uid")?.Value;
             var MemberDto= await UserRepo.GetByIdAsync(cuserid);
+            
+
             var appUser = Mapper.Map<AppUser>(MemberDto);
+
+
+
+
             var LikedUser = await UserRepo.GetByIdAsync(id);
+
+
+
             var SourceUSerWithLikes = await LikeRepo.GetUserWithLikes(appUser.Id);
+
+
             if (LikedUser == null) return NotFound();
+
             if (SourceUSerWithLikes.UserName == LikedUser.UserName) return BadRequest("you cant like youtrself");
-           UserLikes userLike = await LikeRepo.GetUserLike(appUser.Id, LikedUser.MemberId);
+            UserLikes userLike = await LikeRepo.GetUserLike(appUser.Id, LikedUser.MemberId);
             if (userLike != null) return BadRequest("you alredy liked this user");
+
+
 
             userLike = new UserLikes()
             {
                 SourceUserId = appUser.Id,
                 LikedUserId = LikedUser.MemberId
             };
+
             MemberDto.LikedUsers.Add(userLike);
 
             if (!await UserRepo.UpdateAsync(MemberDto))
             {
                 return BadRequest();
             }
+
             return Ok();
 
 

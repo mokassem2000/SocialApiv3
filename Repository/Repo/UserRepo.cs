@@ -61,14 +61,14 @@ namespace SocialClint.Repository.Repo
 
         public async Task<bool> UpdateAsync(MemberDto entity)
         {
-            var appuser = await context.Users.FindAsync(entity.MemberId);
+            var appuser = await context.Users.Include(u=>u.LikedUsers).FirstOrDefaultAsync(u =>u.Id==entity.MemberId);
             appuser.Introduction = entity.Introduction;
             appuser.Intersts = entity.Intersts;
             appuser.City = entity.City;
             appuser.Country = entity.Country;
             appuser.LookingFor = entity.LookingFor;
             appuser.photos = Mapper.Map<List<Photo>>(entity.photos);
-            appuser.LikedUsers = entity.LikedUsers;
+            appuser.LikedUsers.AddRange(entity.LikedUsers);
             context.Users.Update(appuser);
             return await saveChaengesAsync();
         }

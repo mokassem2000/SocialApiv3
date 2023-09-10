@@ -10,6 +10,7 @@ using SocialClint.Repository.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Claims;
+using System.Security.Policy;
 using System.Text;
 
 namespace SocialClint._services.Classes
@@ -38,6 +39,7 @@ namespace SocialClint._services.Classes
             {
                 return new AuthModel { Message = "Username is already registered!" };
             }
+            
 
             var user = new AppUser()
             {
@@ -45,7 +47,9 @@ namespace SocialClint._services.Classes
                 UserName = model.UserName,
             };
 
-            
+
+
+
             var rslt = await _userManager.CreateAsync(user, model.PasswordGroup.ConfirmPassword);
             if (!rslt.Succeeded)
             {
@@ -69,6 +73,11 @@ namespace SocialClint._services.Classes
             var authModel = new AuthModel();
 
             var user = await _userManager.FindByEmailAsync(model.Email);
+            if (await _userManager.IsEmailConfirmedAsync(user))
+            {
+                authModel.Message= "your email is not confirmed" ;
+                return authModel;
+            }
 
             if (user is null || !await _userManager.CheckPasswordAsync(user, model.Password)) 
             {
@@ -86,7 +95,6 @@ namespace SocialClint._services.Classes
 
             return authModel;
         }
-
         private async Task<JwtSecurityToken> CreateJwtToken(AppUser user)
         {
             var userClaims = await _userManager.GetClaimsAsync(user);

@@ -31,6 +31,7 @@ namespace SocialClint.Repository.Repo
 
         public async Task AddMessage(Message message)
         {
+          
             var sender = await _context.users.Include(u => u.photos).FirstOrDefaultAsync(u => u.Id == message.Sender.Id);
             var respient = await _context.users.Include(u => u.photos).FirstOrDefaultAsync(u => u.Id == message.Recipient.Id);
             message.Sender = sender;
@@ -69,10 +70,10 @@ namespace SocialClint.Repository.Repo
             Message[] rslt;
             switch (messageParams.Container)
             {
-                case "inbox":
+                case "Outbox":
                     rslt = _context.messages.Include(m => m.Sender).ThenInclude(s => s.photos).Where(m => m.Recipient.Id == messageParams.UserID && m.Sender.Id == Id).ToArray();
                     break;
-                case "Outbox":
+                case "inbox":
                     rslt= _context.messages.Include(m => m.Sender).ThenInclude(s=>s.photos).Where(m => m.Sender.Id == messageParams.UserID && m.Recipient.Id==Id).ToArray();
                     break;
                 default:

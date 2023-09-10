@@ -20,11 +20,10 @@ namespace SocialClint.Controllers
 
         public UsersController(IRepository<MemberDto> repo,
                                IMapper mapper,
-                               PhotoService photoService)
+                             PhotoService photoService)
         {
-            Repo = repo;
+             Repo = repo;
             _Mapper = mapper;
-
             _photoService = photoService;
         }
 
